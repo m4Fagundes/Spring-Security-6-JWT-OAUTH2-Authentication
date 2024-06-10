@@ -19,40 +19,39 @@ import puc.comp.api.springsecurity.repository.UserRepository;
 
 @RestController
 public class TokenControler {
-    
+
     @Autowired
     private JwtEncoder jwtEncoder;
 
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
-        
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+
         var user = userRepository.findByUsername(loginRequest.username());
 
-        if(user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)){
+        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("User or password is invalid");
-        } else{
+        }
 
-            var now = Instant.now();
-            var expriresIn = 300L;
+        var now = Instant.now();
+        var expriresIn = 300L;
 
-            var claims = JwtClaimsSet.builder()
+        var claims = JwtClaimsSet.builder()
                 .issuer("PUC Comp Back-End")
                 .subject(user.get().getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expriresIn))
                 .build();
 
-            var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-            return ResponseEntity.ok(new LoginResponse(jwtValue, expriresIn));
-                
-        }
+        return ResponseEntity.ok(new LoginResponse(jwtValue, expriresIn));
+
     }
 
 }
