@@ -1,6 +1,7 @@
 package puc.comp.api.springsecurity.controller;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import puc.comp.api.springsecurity.controller.dto.LoginRequest;
 import puc.comp.api.springsecurity.controller.dto.LoginResponse;
+import puc.comp.api.springsecurity.model.Role;
 import puc.comp.api.springsecurity.repository.UserRepository;
 
 @RestController
@@ -41,11 +43,17 @@ public class TokenControler {
         var now = Instant.now();
         var expriresIn = 300L;
 
+        var scopes = user.get().getRoles()
+            .stream()
+            .map(Role::getName)
+            .collect(Collectors.joining(" "));
+
         var claims = JwtClaimsSet.builder()
                 .issuer("PUC Comp Back-End")
                 .subject(user.get().getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expriresIn))
+                .claim("scope", scopes)
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
