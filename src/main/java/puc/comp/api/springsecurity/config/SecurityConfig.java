@@ -43,6 +43,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(autorize -> autorize
             .requestMatchers(HttpMethod.POST, "/register").permitAll()
             .requestMatchers(HttpMethod.POST, "/login").permitAll()
+            .requestMatchers("url").permitAll()
+            .requestMatchers(HttpMethod.GET).permitAll()
             .anyRequest().authenticated())
             .csrf(csrf -> csrf.disable())
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -59,7 +61,7 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwks);
 
     }
-
+    
     @Bean
     public JwtDecoder jwtDecoder(){
         return NimbusJwtDecoder.withPublicKey(publicKey).build();
@@ -69,5 +71,14 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    public static final String[] url={
+        "/api/v1/auth/**",
+        "/v3/api-docs",
+        "/v2/api-docs",
+        "/swagger-resources/**",
+        "/swagger-ui/**",
+        "/webjar/**"
+    };
 
 }
