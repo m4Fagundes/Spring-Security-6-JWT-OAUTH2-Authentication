@@ -32,7 +32,7 @@ public class UserController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    @PostMapping("/users")
+    @PostMapping("/register")
     public ResponseEntity<Void> addUser(@RequestBody CreateUserDto dto) {
 
         Role basicRole = roleRepository.findByName(Role.Values.BASIC.name());
