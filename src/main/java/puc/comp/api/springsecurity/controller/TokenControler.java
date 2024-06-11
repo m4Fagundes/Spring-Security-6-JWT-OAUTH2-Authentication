@@ -40,7 +40,7 @@ public class TokenControler {
             throw new BadCredentialsException("User or password is invalid");
         }
 
-        var now = Instant.now();
+        Instant now = Instant.now();
         var expriresIn = 300L;
 
         var scopes = user.get().getRoles()
