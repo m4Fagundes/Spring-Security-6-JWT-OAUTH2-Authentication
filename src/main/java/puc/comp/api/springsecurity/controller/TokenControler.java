@@ -36,6 +36,9 @@ public class TokenControler {
 
         var user = userRepository.findByUsername(loginRequest.username());
 
+        if(user.isEmpty())
+            user = userRepository.findByEmail(loginRequest.email());
+
         if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("User or password is invalid");
         }
